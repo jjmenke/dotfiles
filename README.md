@@ -1,6 +1,28 @@
 # Mark's Dotfiles
 
 ## Installation
+ Some basics:
+ 1. Install Homebrew
+ 1. Install Oh My Zsh
+ 1. Install [powerlevel 10K](https://github.com/romkatv/powerlevel10k)
+ 1. Install [bat](https://github.com/sharkdp/bat)
+ 1. Install [Fuzzy Find](https://github.com/junegunn/fzf)
+
+### Configure FZF
+```
+export FZF_DEFAULT_COMMAND="rg --hidden --files"
+export FZF_DEFAULT_OPTS='--preview="bat --style=numbers --color=always {}"'
+```
+
+### Configure vim
+```
+set rtp+=/usr/local/opt/fzf
+colo desert
+syntax on
+```
+
+# Existing Docs
+
 
 ### Clone repositories
 
