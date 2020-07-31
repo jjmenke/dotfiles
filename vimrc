@@ -78,6 +78,7 @@ Plug 'groenewege/vim-less'
 Plug 'jparise/vim-graphql'
 Plug 'vim-scripts/nginx.vim'
 Plug 'StanAngeloff/php.vim'
+Plug 'tpope/vim-markdown'
 
 """""""""""""""""""""""""""""""""
 " General File Editing
@@ -120,6 +121,12 @@ Plug 'tpope/vim-unimpaired'
 
 " Autocomplete for search
 Plug 'vim-scripts/SearchComplete'
+
+"""""""""""""""""""""""""""""""""
+" Javascript File Editing
+"""""""""""""""""""""""""""""""""
+" node_modules navigation
+Plug 'moll/vim-node'
 
 """""""""""""""""""""""""""""""""
 " Ruby File Editing
@@ -199,9 +206,9 @@ call plug#end()
 """""""""""""""""""""""""""""""""
 " VIM SETTINGS
 """""""""""""""""""""""""""""""""
-if has('autocmd')
-  filetype plugin indent on                                                                       " Enable filetype detection, filetype-specific indenting/plugins
-endif
+
+filetype plugin indent on                                                                         " Enable filetype detection, filetype-specific indenting/plugins
+
 if has('syntax') && !exists('g:syntax_on')
   syntax enable                                                                                   " Enable syntax highlighting
 endif
@@ -225,6 +232,9 @@ set splitbelow                                                                  
 set backspace=indent,eol,start                                                                    " Let backspace work over anything.
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_                                                              " Show “invisible” characters
 set clipboard=unnamed                                                                             " Use the OS clipboard by default (on versions compiled with `+clipboard`)
+set lazyredraw                                                                                    " skip redrawing screen in some cases
+"set autochdir                                                                                     " automatically set current directory to directory of last opened file
+"set wildmode=longest,list                                                                         " tab completion for files/bufferss
 "set wildmenu                                                                                      " Enhance command-line completion
 "set esckeys                                                                                       " Allow cursor keys in insert mode
 "set backspace=indent,eol,start                                                                    " Allow backspace in insert mode
@@ -260,8 +270,14 @@ set showcmd                                                                     
 set scrolloff=3                                                                                   " Start scrolling three lines before the horizontal window border
 set sidescrolloff=5
 set display+=lastline
-set cursorline                                                                                    " Highlight current line
 set shell=/bin/bash
+
+" highlight current line, but only in active window
+augroup CursorLineOnlyInActiveWindow
+    autocmd!
+    autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    autocmd WinLeave * setlocal nocursorline
+augroup END
 
 " Neovim options
 if has('nvim')
@@ -340,6 +356,9 @@ nnoremap <C-Right> :tabnext<CR>
 nnoremap <silent> <A-Left> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <A-Right> :execute 'silent! tabmove ' . tabpagenr()<CR>
 
+" toggle relative numbering
+nnoremap <C-n> :set rnu!<CR>
+
 """""""""""""""""""""""""""""""""
 " INSERT MAPPINGS
 """""""""""""""""""""""""""""""""
@@ -380,6 +399,7 @@ let g:NERDTreeHighlightCursorline = 1
 let g:NERDTreeMinimalUI = 1
 let g:NERDTreeAutoDeleteBuffer = 1
 let g:NERDTreeWinSize = 51
+let NERDTreeQuitOnOpen = 1
 noremap \ :NERDTreeToggle<CR>
 noremap \| :NERDTreeFind<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif " Automatically close vim when only nerd tree is left open
@@ -462,6 +482,12 @@ let g:indentLine_char = '│'
 
 " mxw/vim-jsx
 let g:jsx_ext_required = 0                                                                        " Allow JSX in normal JS files
+
+" moll/vim-node
+autocmd User Node if &filetype == "javascript" | setlocal expandtab | endif
+
+" tpope/vim-markdown
+let g:markdown_syntax_conceal = 0
 
 " hail2u/vim-css3-syntax
 augroup VimCSS3Syntax
@@ -582,6 +608,15 @@ if &diff
 endif
 
 """""""""""""""""""""""""""""""""
+" PERSISTENT UNDO
+"""""""""""""""""""""""""""""""""
+" Keep undo history across sessions, by storing in file.
+if has('persistent_undo')
+  set undodir=~/.vim/backups
+  set undofile
+endif
+
+"""""""""""""""""""""""""""""""""
 " Troubleshooting
 """""""""""""""""""""""""""""""""
 " Show which highlight groups apply to the item under the cursor
@@ -593,6 +628,8 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+
+com! FormatJSON %!python -m json.tool
 
 " CTAGS via Async
 " function! s:CtagsAsync()
@@ -618,3 +655,8 @@ endfunc
 " augroup END
 "
 " " vim:ft=vim
+
+let $LOCALFILE=expand("~/.vimrc.local")
+if filereadable($LOCALFILE)
+    source $LOCALFILE
+endif

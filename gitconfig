@@ -10,6 +10,8 @@
   rhb = !git reset --hard origin/$(git branch --show-current)
   stashall = stash save --include-untracked
   aaf = !git add . && git amend && git fps
+  update-submodules = submodule update --init --recursive
+  upgrade-submodules = submodule update --init --remote
 
   # Colorful master log listing
   l = log --oneline --decorate --graph --date=relative --abbrev-commit --pretty=format:'%C(yellow)%h%Creset - %s %C(red)%d%Creset %Cgreen(%cr BY %ae)%Creset'
@@ -69,6 +71,7 @@
 
   # List contributors with number of commits
   contributors = shortlog --summary --numbered -e
+  linecontributors = ! "lc() { git ls-tree --name-only -z -r HEAD | xargs -0 -n1 git diff --no-index --numstat /dev/null 2>/dev/null | grep -v '^-' | cut -f 3- | cut -d ' ' -f 3- | xargs -n1 git blame --line-porcelain | grep '^author ' | cut -d ' ' -f 2- | sort | uniq -c | sort -nr; }; lc"
 
 [branch]
   autosetupmerge = always
@@ -80,8 +83,8 @@
 
 [core]
 
-  # Use custom `.gitignore` and `.gitattributes`
-  excludesfile = ~/.gitignore
+  # Use custom `.gitignore_global` and `.gitattributes`
+  excludesfile = ~/.gitignore_global
   attributesfile = ~/.gitattributes
 
   # Don't ignore case; causes issues when projects have case-sensitive imports
@@ -130,6 +133,7 @@
   # Detect copies as well as renames
   renames = copies
   mnemonicprefix = true
+  compactionHeuristic = true
 
 [help]
 
@@ -144,6 +148,7 @@
   # Include summaries of merged commits in newly created merge commit messages
   log = true
   stat = true
+  defaultToUpstream = true
 
 [merge "railsschema"]
         name = newer Rails schema version
@@ -166,7 +171,7 @@
   followTags = true
 
 [pack]
-	useSparse = true
+  useSparse = true
 
 [rebase]
   autosquash = true
@@ -199,3 +204,7 @@
 [grep]
 
   linenumber = true
+
+[include]
+
+  path = ~/.gitconfig.local

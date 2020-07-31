@@ -1,0 +1,38 @@
+- defaults:
+    link:
+      create: true
+      relink: true
+
+- clean: ['~', '~/.config']
+
+- link:
+    ~/.bash_profile:
+    ~/.bash:
+    ~/.bashrc:
+    ~/.config/nvim/init.vim: vimrc
+    ~/.curlrc:
+    ~/.editorconfig:
+    ~/.gemrc:
+    ~/.gitattributes:
+    ~/.gitconfig:
+    ~/.gitignore_global:
+    ~/.gvimrc:
+    ~/.ignore:
+    ~/.inputrc:
+    ~/.myrspec:
+    ~/.screenrc:
+    ~/.tmux.conf:
+    ~/.vim:
+    ~/.vimrc:
+    ~/.wgetrc:
+    ~/bin: bin
+    ~/init: init
+
+- create:
+  - ~/projects
+
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]
+  - [git update-submodules, Update submodules]
+  # - [sh apps.sh, Install apps]
+  # - [sh macos.sh, Run macOS configuration]
